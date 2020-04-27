@@ -40,6 +40,7 @@ class App extends React.Component {
           er: true,
           loading: false
         })
+        return
       }
       console.log(data)
 
@@ -51,6 +52,13 @@ class App extends React.Component {
       const api_url_daily = await
         fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
       const data_daily = await api_url_daily.json();
+      if (api_url_daily.status !== 200) {
+        this.setState({
+          er: true,
+          loading: false
+        })
+        return
+      }
       console.log(data_daily)
 
       let list = data_daily.hourly.slice(0, 7);
@@ -80,7 +88,7 @@ class App extends React.Component {
         <h3>Введите город, чтобы узнать погоду</h3>
         <Form weatherMethod={this.gettingWeather} />
         <br />
-        {(this.state.er) && <div>нет подключения интернет</div>}
+        {(this.state.er) && <div>Ошибка API</div>}
         {(this.state.loading) && <div>Загрузка</div>}
 
         <Weather
