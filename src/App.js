@@ -1,10 +1,10 @@
 import React from "react";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.css";
-import Form from "./components/form";
-import Weather from "./components/weather";
-import WeatherHours from "./components/weather_hours";
-import WeatherDaily from "./components/weather_daily";
+import Form from "./components/Form";
+import Weather from "./components/Weather";
+import WeatherHours from "./components/WeatherHours";
+import WeatherDaily from "./components/WeatherDaily";
 
 const API_KEY = "4c084b1a8061eeada6ecba832dd44a9f"
 class App extends React.Component {
@@ -18,6 +18,8 @@ class App extends React.Component {
       icon: undefined,
       main: undefined,
       list_hours: [],
+      loading: false,
+      er: false,
       daily: []
     };
   }
@@ -25,10 +27,22 @@ class App extends React.Component {
     e.preventDefault();
     const city = e.target.elements.city.value;
     if (city) {
+
+      this.setState({
+        loading: true
+      })
+
       const api_url = await
         fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`);
       const data = await api_url.json();
+      if (api_url.status !== 200) {
+        this.setState({
+          er: true,
+          loading: false
+        })
+      }
       console.log(data)
+
       const lon = data.coord.lon;
       const lat = data.coord.lat;
 
@@ -49,16 +63,11 @@ class App extends React.Component {
         country: data.sys.country,
         list_hours: list,
         daily: daily,
-        error: undefined
+        loading: false,
       });
     }
     else {
       this.setState({
-        temp: undefined,
-        city: undefined,
-        country: undefined,
-        icon: undefined,
-        main: undefined,
         error: "Введите название города"
       })
     }
@@ -71,6 +80,9 @@ class App extends React.Component {
         <h3>Введите город, чтобы узнать погоду</h3>
         <Form weatherMethod={this.gettingWeather} />
         <br />
+        {(this.state.er) && <div>нет подключения интернет</div>}
+        {(this.state.loading) && <div>Загрузка</div>}
+
         <Weather
           temp={this.state.temp}
           city={this.state.city}
@@ -80,7 +92,7 @@ class App extends React.Component {
           main={this.state.main}
         />
         <WeatherHours list={this.state.list_hours} />
-        <WeatherDaily city={this.state.city} daily = {this.state.daily}/>
+        <WeatherDaily city={this.state.city} daily={this.state.daily} />
       </div>
     );
 
