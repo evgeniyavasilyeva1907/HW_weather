@@ -40,3 +40,6 @@
   margin: auto;
   text-align: center;
 }
+.offline{
+  color: red;
+}

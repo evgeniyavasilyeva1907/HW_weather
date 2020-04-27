@@ -5,6 +5,7 @@ import Form from "./components/Form";
 import Weather from "./components/Weather";
 import WeatherHours from "./components/WeatherHours";
 import WeatherDaily from "./components/WeatherDaily";
+import { Offline, Online } from "react-detect-offline";
 
 const API_KEY = "4c084b1a8061eeada6ecba832dd44a9f"
 class App extends React.Component {
@@ -85,22 +86,27 @@ class App extends React.Component {
 
     return (
       <div className="container_main">
-        <h3>Введите город, чтобы узнать погоду</h3>
-        <Form weatherMethod={this.gettingWeather} />
-        <br />
-        {(this.state.er) && <div>Ошибка API</div>}
-        {(this.state.loading) && <div>Загрузка</div>}
+        <Online>
+          <h3>Введите город, чтобы узнать погоду</h3>
+          <Form weatherMethod={this.gettingWeather} />
+          <br />
+          {(this.state.er) && <div>Ошибка API</div>}
+          {(this.state.loading) && <div className="spinner-border text-primary" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>}
 
-        <Weather
-          temp={this.state.temp}
-          city={this.state.city}
-          country={this.state.country}
-          error={this.state.error}
-          icon={this.state.icon}
-          main={this.state.main}
-        />
-        <WeatherHours list={this.state.list_hours} />
-        <WeatherDaily city={this.state.city} daily={this.state.daily} />
+          <Weather
+            temp={this.state.temp}
+            city={this.state.city}
+            country={this.state.country}
+            error={this.state.error}
+            icon={this.state.icon}
+            main={this.state.main}
+          />
+          <WeatherHours list={this.state.list_hours} />
+          <WeatherDaily city={this.state.city} daily={this.state.daily} />
+        </Online>
+        <Offline > <h2 className="offline">Нет подключения к интернет</h2></Offline>
       </div>
     );
 
